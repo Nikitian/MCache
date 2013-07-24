@@ -5,7 +5,8 @@
  * Support tag and group operations by tag
  * @uses Memcache or Memcached
  * @author Nikitian
- * @version 1.0
+ * @version 1.0.1
+ *  1.0.1    Fix self::add() for memcache bug
  */
 class MCache{
     /**
@@ -166,6 +167,9 @@ class MCache{
                     }
                 }
             }
+        }
+        if(array_key_exists('timeout',$this->_config)){
+            $this->timeoutDefault = $this->_config['timeout'];
         }
         $this->_resource = new $this->apitype;
         if(!array_key_exists('host',$this->_config)){
@@ -553,7 +557,7 @@ class MCache{
                 $name = $this->_nameWithDomain($name);
             }
             if($this->apitype=='Memcache'){
-                $ret = $this->_resource->add($name,$this->_pack($value,$timeout),ceil($timeout));
+                $ret = $this->_resource->add($name,$this->_pack($value,$timeout),0,ceil($timeout));
             }
             else{
                 $ret = $this->_resource->add($name,$this->_pack($value,$timeout),$this->_checkCompress($value),ceil($timeout));
